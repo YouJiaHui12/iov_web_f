@@ -1,25 +1,25 @@
 const RentalInformationData = {
   rentalmessages: [
     {
-      key: '1',
-      订单号: 'xxxxxxx',
+      key: 1,
+      orderNumber: 'xxxxxxx',
       VIN: 'xxxxxxx',
-      车牌: '闽D52315',
-      租赁人: '张三'
+      licensePlate: '闽D52315',
+      leasePerson: '张三'
     },
     {
-      key: '2',
-      订单号: 'xxxxxxx',
+      key: 2,
+      orderNumber: 'xxxxxxx',
       VIN: 'xxxxxxx',
-      车牌: '闽D54261',
-      租赁人: '李四'
+      licensePlate: '闽D54261',
+      leasePerson: '李四'
     },
     {
-      key: '3',
-      订单号: 'xxxxxxx',
+      key: 3,
+      orderNumber: 'xxxxxxx',
       VIN: 'xxxxxxx',
-      车牌: '闽D12345',
-      租赁人: '王五'
+      licensePlate: '闽D12345',
+      leasePerson: '王五'
     }
   ]
 };

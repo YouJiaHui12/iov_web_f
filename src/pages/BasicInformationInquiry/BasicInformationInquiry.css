@@ -1,0 +1,6 @@
+.basic-infor-inpuiry-main-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 40px 0px 40px;
+  min-height: 100px;
+}

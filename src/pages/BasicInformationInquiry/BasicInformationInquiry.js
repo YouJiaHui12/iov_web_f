@@ -1,27 +1,57 @@
 import React, { Component } from 'react';
-import { Input, Select, Button, Table, Divider } from 'antd';
-import BasicInformationInquiryData from './BasicInformationInquirydata';
+import './BasicInformationInquiry.css';
+import { Input, Select, Button, Table, Divider, Form, Popconfirm } from 'antd';
+import BasicInformationInquiryData from './BasicInformationInquiryData';
+import Axios from 'axios';
 const Option = Select.Option;
 
-export default class BasicInformationInquiry extends Component {
+class BasicInformationInquiry extends Component {
   constructor() {
     super();
     this.state = {
-      carmessageslist: null
+      carmessageslist: []
     };
   }
   componentWillMount() {
-    const { carmessageslist } = BasicInformationInquiryData;
-    this.setState({
-      carmessageslist: carmessageslist
+    Axios({
+      method: 'get',
+      url: 'http://www.fomosmt.cn/car/carInfo/listCarInfo',
+      params: { carID: 1 }
+    }).then(res => {
+      const data = res.data.data;
+      console.log(data);
+      this.setState({
+        carmessageslist: data.carmessageslist
+      });
     });
   }
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  };
+  handleDelete = key => {
+    const dataSource = [...this.state.carmessageslist];
+    this.setState({
+      carmessageslist: dataSource.filter(value => value.key !== key)
+    });
+    console.log(key);
+  };
+
   render() {
+    const { getFieldDecorator } = this.props.form;
+    const {
+      history: { push }
+    } = this.props;
     const columns = [
       {
         title: '车辆ID',
-        dataIndex: '车辆ID',
-        key: '车辆ID'
+        dataIndex: 'carID',
+        key: 'carID'
       },
       {
         title: 'VIN',
@@ -30,34 +60,39 @@ export default class BasicInformationInquiry extends Component {
       },
       {
         title: '车牌',
-        dataIndex: '车牌',
-        key: '车牌'
+        dataIndex: 'licensePlate',
+        key: 'licensePlate'
       },
       {
         title: '车辆类型',
-        dataIndex: '车辆类型',
-        key: '车辆类型'
+        dataIndex: 'vehicleType',
+        key: 'vehicleType'
       },
       {
         title: '底盘信息',
-        dataIndex: '底盘信息',
-        key: '底盘信息'
+        dataIndex: 'chassiscInformation',
+        key: 'chassiscInformation'
       },
       {
         title: '租赁状态',
-        dataIndex: '租赁状态',
-        key: '租赁状态'
+        dataIndex: 'leaseStatus',
+        key: 'leaseStatus'
       },
       {
         title: '操作',
         key: '操作',
-        render: () => (
+        render: (text, record) => (
           <span>
             <a href='javascript:;'>查看</a>
             <Divider type='vertical' />
             <a href='javascript:;'>编辑</a>
             <Divider type='vertical' />
-            <a href='javascript:;'>删除</a>
+            <Popconfirm
+              title='Sure to delete?'
+              onConfirm={() => this.handleDelete(record.key)}
+            >
+              <a href='javascript:;'>删除</a>
+            </Popconfirm>
           </span>
         )
       }
@@ -72,31 +107,40 @@ export default class BasicInformationInquiry extends Component {
             background: '#fff'
           }}
         >
-          <div
-            className='basic-infor-inpuiry-main-top'
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              minHeight: '75px',
-              alignItems: 'center',
-              margin: '0 110px'
-            }}
-          >
-            <div>
-              车辆ID：
-              <Input placeholder='请输入' style={{ width: '200px' }} />
-            </div>
-            <div>
-              状态：
-              <Select defaultValue='请选择' style={{ width: '200px' }}>
-                <Option value='空闲'>空闲</Option>
-                <Option value='已租'>已租</Option>
-              </Select>
-              <Button type='primary' style={{ marginLeft: '50px' }}>
-                查询
-              </Button>
-            </div>
-            <Button type='primary'>添加车辆</Button>
+          <div className='basic-infor-inpuiry-main-top'>
+            <Form layout='inline' onSubmit={this.handleSubmit}>
+              <Form.Item label='VIN'>
+                {getFieldDecorator('VIN', {
+                  rules: [{ required: true, message: '请输入VIN！' }]
+                })(<Input placeholder='请输入' style={{ width: '200px' }} />)}
+              </Form.Item>
+              <Form.Item label='状态：'>
+                {getFieldDecorator('status', {
+                  rules: [{ required: true, message: '请选择状态！' }]
+                })(
+                  <Select
+                    placeholder='请选择房车类型'
+                    style={{ width: '200px' }}
+                  >
+                    <Option value='1'>空闲</Option>
+                    <Option value='2'>已租</Option>
+                  </Select>
+                )}
+              </Form.Item>
+              <Form.Item>
+                <Button type='primary' htmlType='submit'>
+                  查询
+                </Button>
+              </Form.Item>
+            </Form>
+            <Button
+              type='primary'
+              onClick={() => {
+                push('/BasicInformationEntry');
+              }}
+            >
+              添加车辆
+            </Button>
           </div>
           <div className='basic-infor-inpuiry-main-middle'>
             <Table columns={columns} dataSource={carmessageslist} />
@@ -106,3 +150,5 @@ export default class BasicInformationInquiry extends Component {
     );
   }
 }
+const BasicInformationInquiryaa = Form.create()(BasicInformationInquiry);
+export default BasicInformationInquiryaa;

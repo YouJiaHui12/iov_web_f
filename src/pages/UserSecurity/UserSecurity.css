@@ -1,0 +1,15 @@
+.user-security {
+  margin-top: 30px;
+  background-color: white;
+  min-height: 600px;
+}
+.user-security-main {
+  margin-top: 30px;
+  margin: auto;
+  width: 600px;
+}
+.license-plate {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
