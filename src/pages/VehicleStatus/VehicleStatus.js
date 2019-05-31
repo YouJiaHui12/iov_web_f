@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Divider } from "antd";
 import axios from "axios";
+
 export default class VehicleStatus extends Component {
   constructor() {
     super();
@@ -64,8 +65,10 @@ export default class VehicleStatus extends Component {
       <div style={{ width: "50px", height: "50px" }}>sss</div>
     ); // 创建信息窗口对象
     map.openInfoWindow(infoWindow, nowPoint); //信息窗,失败
+
   }
   render() {
+    let lngLat=this.state.lngLat
     return (
       <div
         className="vehicle-status-main"
