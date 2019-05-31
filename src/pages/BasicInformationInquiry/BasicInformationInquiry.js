@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
 import './BasicInformationInquiry.css';
-import { Input, Select, Button, Table, Divider, Form, Popconfirm } from 'antd';
+import {
+  Input,
+  Select,
+  Button,
+  Table,
+  Divider,
+  Form,
+  Popconfirm,
+  message
+} from 'antd';
 import BasicInformationInquiryData from './BasicInformationInquiryData';
 import Axios from 'axios';
+import Qs from 'qs';
 const Option = Select.Option;
 
 class BasicInformationInquiry extends Component {
@@ -13,10 +23,11 @@ class BasicInformationInquiry extends Component {
     };
   }
   componentWillMount() {
+    var timestamp = new Date().valueOf();
     Axios({
       method: 'get',
-      url: 'http://www.fomosmt.cn/car/carInfo/listCarInfo',
-      params: { carID: 1 }
+      url: 'https://www.fomosmt.cn/car/carInfo/listCarInfo',
+      params: { time: timestamp }
     }).then(res => {
       const data = res.data.data;
       console.log(data);
@@ -30,15 +41,48 @@ class BasicInformationInquiry extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        console.log('Received values of form: ', values.VIN);
+        Axios({
+          method: 'get',
+          url: 'https://www.fomosmt.cn/car/carInfo/getCarInfoByVin',
+          params: { vin: values.VIN }
+        })
+          .then(res => {
+            console.log(res.data.data);
+            const {
+              carPlate,
+              vin,
+              carChassis,
+              carStatus,
+              carId
+            } = res.data.data;
+            let searchdata={
+              
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
       }
     });
   };
   handleDelete = key => {
     const dataSource = [...this.state.carmessageslist];
-    this.setState({
-      carmessageslist: dataSource.filter(value => value.key !== key)
-    });
+
+    Axios({
+      method: 'post',
+      url: 'https://www.fomosmt.cn/car/carInfo/deleteCarInfo',
+      data: Qs.stringify({ id: key })
+    })
+      .then(res => {
+        this.setState({
+          carmessageslist: dataSource.filter(value => value.key !== key)
+        });
+      })
+      .catch(err => {
+        message.error('删除失败');
+        console.log(err);
+      });
     console.log(key);
   };
 
@@ -50,8 +94,8 @@ class BasicInformationInquiry extends Component {
     const columns = [
       {
         title: '车辆ID',
-        dataIndex: 'carID',
-        key: 'carID'
+        dataIndex: 'key',
+        key: 'key'
       },
       {
         title: 'VIN',

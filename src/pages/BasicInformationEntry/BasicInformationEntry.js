@@ -33,10 +33,18 @@ class BasicInformationEntry extends Component {
     } = this.props;
     this.props.form.validateFields((err, values) => {
       if (!err) {
+        const { carVin, brand, licensePlate, chassisInfo, id } = values;
+        console.log(licensePlate);
         Axios({
           method: 'post',
           url: 'https://www.fomosmt.cn/car/carInfo/addCarInfo',
-          data: Qs.stringify(values)
+          data: Qs.stringify({
+            carVin: carVin,
+            brand: brand,
+            licentsePlate: licensePlate,
+            chassisInfo: chassisInfo,
+            'car.id': id
+          })
         })
           .then(res => {
             console.log('success');
@@ -44,6 +52,7 @@ class BasicInformationEntry extends Component {
           })
           .catch(err => {
             console.log('fail');
+            console.log(values);
           });
       }
     });
@@ -65,7 +74,7 @@ class BasicInformationEntry extends Component {
           style={{ marginTop: '36px' }}
         >
           <Form.Item label='VIN' hasFeedback>
-            {getFieldDecorator('VIN', {
+            {getFieldDecorator('carVin', {
               rules: [
                 {
                   required: true,
@@ -95,7 +104,7 @@ class BasicInformationEntry extends Component {
             })(<Input />)}
           </Form.Item>
           <Form.Item label='底盘信息' hasFeedback>
-            {getFieldDecorator('chassisInformation', {
+            {getFieldDecorator('chassisInfo', {
               rules: [
                 {
                   required: true,
@@ -105,7 +114,7 @@ class BasicInformationEntry extends Component {
             })(<Input />)}
           </Form.Item>
           <Form.Item label='房车类型' hasFeedback>
-            {getFieldDecorator('rvTypeId', {
+            {getFieldDecorator('id', {
               rules: [{ required: true, message: '请选择房车类型' }]
             })(
               <Select placeholder='请选择房车类型'>
