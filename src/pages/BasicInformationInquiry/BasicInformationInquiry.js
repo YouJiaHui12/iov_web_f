@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './BasicInformationInquiry.css';
 import {
   Input,
-  Select,
+  // Select,
   Button,
   Table,
   Divider,
@@ -10,10 +10,9 @@ import {
   Popconfirm,
   message
 } from 'antd';
-import BasicInformationInquiryData from './BasicInformationInquiryData';
 import Axios from 'axios';
 import Qs from 'qs';
-const Option = Select.Option;
+// const Option = Select.Option;
 
 class BasicInformationInquiry extends Component {
   constructor() {
@@ -52,13 +51,25 @@ class BasicInformationInquiry extends Component {
             const {
               carPlate,
               vin,
+              carType,
               carChassis,
               carStatus,
-              carId
+              carID
             } = res.data.data;
-            let searchdata={
-              
-            }
+            const searchdata = {
+              key: carID,
+              carID: carID,
+              VIN: vin,
+              licensePlate: carPlate,
+              vehicleType: carType,
+              chassiscInformation: carChassis,
+              leaseStatus: carStatus
+            };
+            const newlist = [];
+            newlist.push(searchdata);
+            this.setState({
+              carmessageslist: newlist
+            });
           })
           .catch(err => {
             console.log(err);
@@ -127,15 +138,15 @@ class BasicInformationInquiry extends Component {
         key: '操作',
         render: (text, record) => (
           <span>
-            <a href='javascript:;'>查看</a>
-            <Divider type='vertical' />
-            <a href='javascript:;'>编辑</a>
-            <Divider type='vertical' />
+            <a href="javascript:;">查看</a>
+            <Divider type="vertical" />
+            <a href="javascript:;">编辑</a>
+            <Divider type="vertical" />
             <Popconfirm
-              title='Sure to delete?'
+              title="Sure to delete?"
               onConfirm={() => this.handleDelete(record.key)}
             >
-              <a href='javascript:;'>删除</a>
+              <a href="javascript:;">删除</a>
             </Popconfirm>
           </span>
         )
@@ -144,41 +155,41 @@ class BasicInformationInquiry extends Component {
 
     const { carmessageslist } = this.state;
     return (
-      <div className='basic-infor-inpuiry' style={{ marginTop: '30px' }}>
+      <div className="basic-infor-inpuiry" style={{ marginTop: '30px' }}>
         <div
-          className='basic-infor-inpuiry-main'
+          className="basic-infor-inpuiry-main"
           style={{
             background: '#fff'
           }}
         >
-          <div className='basic-infor-inpuiry-main-top'>
-            <Form layout='inline' onSubmit={this.handleSubmit}>
-              <Form.Item label='VIN'>
+          <div className="basic-infor-inpuiry-main-top">
+            <Form layout="inline" onSubmit={this.handleSubmit}>
+              <Form.Item label="VIN">
                 {getFieldDecorator('VIN', {
                   rules: [{ required: true, message: '请输入VIN！' }]
-                })(<Input placeholder='请输入' style={{ width: '200px' }} />)}
+                })(<Input placeholder="请输入" style={{ width: '200px' }} />)}
               </Form.Item>
-              <Form.Item label='状态：'>
+              {/* <Form.Item label="状态：">
                 {getFieldDecorator('status', {
                   rules: [{ required: true, message: '请选择状态！' }]
                 })(
                   <Select
-                    placeholder='请选择房车类型'
+                    placeholder="请选择房车类型"
                     style={{ width: '200px' }}
                   >
-                    <Option value='1'>空闲</Option>
-                    <Option value='2'>已租</Option>
+                    <Option value="1">空闲</Option>
+                    <Option value="2">已租</Option>
                   </Select>
                 )}
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item>
-                <Button type='primary' htmlType='submit'>
+                <Button type="primary" htmlType="submit">
                   查询
                 </Button>
               </Form.Item>
             </Form>
             <Button
-              type='primary'
+              type="primary"
               onClick={() => {
                 push('/BasicInformationEntry');
               }}
@@ -186,7 +197,7 @@ class BasicInformationInquiry extends Component {
               添加车辆
             </Button>
           </div>
-          <div className='basic-infor-inpuiry-main-middle'>
+          <div className="basic-infor-inpuiry-main-middle">
             <Table columns={columns} dataSource={carmessageslist} />
           </div>
         </div>

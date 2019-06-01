@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './BasicInformationEntry.css';
-import BasicInformationEntryData from './BasicInformationEntryData.js';
-import { Form, Input, Select, Button } from 'antd';
+import { Form, Input, Select, Button, message } from 'antd';
+
 import Axios from 'axios';
 import Qs from 'qs';
 const { Option } = Select;
@@ -43,7 +43,7 @@ class BasicInformationEntry extends Component {
             brand: brand,
             licentsePlate: licensePlate,
             chassisInfo: chassisInfo,
-            'car.id': id
+            'car.carType': id
           })
         })
           .then(res => {
@@ -52,7 +52,8 @@ class BasicInformationEntry extends Component {
           })
           .catch(err => {
             console.log('fail');
-            console.log(values);
+            // console.log(values);
+            message.error('VIN相同');
           });
       }
     });
@@ -66,14 +67,14 @@ class BasicInformationEntry extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <div>
-        <div className='infor-entry'>车辆基本信息录入</div>
+        <div className="infor-entry">车辆基本信息录入</div>
         <Form
           onSubmit={this.handleSubmit}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 8 }}
           style={{ marginTop: '36px' }}
         >
-          <Form.Item label='VIN' hasFeedback>
+          <Form.Item label="VIN" hasFeedback>
             {getFieldDecorator('carVin', {
               rules: [
                 {
@@ -83,7 +84,7 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label='品牌' hasFeedback>
+          <Form.Item label="品牌" hasFeedback>
             {getFieldDecorator('brand', {
               rules: [
                 {
@@ -93,7 +94,7 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label='车牌' hasFeedback>
+          <Form.Item label="车牌" hasFeedback>
             {getFieldDecorator('licensePlate', {
               rules: [
                 {
@@ -103,7 +104,7 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label='底盘信息' hasFeedback>
+          <Form.Item label="底盘信息" hasFeedback>
             {getFieldDecorator('chassisInfo', {
               rules: [
                 {
@@ -113,14 +114,14 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label='房车类型' hasFeedback>
+          <Form.Item label="房车类型" hasFeedback>
             {getFieldDecorator('id', {
               rules: [{ required: true, message: '请选择房车类型' }]
             })(
-              <Select placeholder='请选择房车类型'>
+              <Select placeholder="请选择房车类型">
                 {RVType.map((value, index) => {
                   return (
-                    <Option key={index} value={value.RVTypeId}>
+                    <Option key={index} value={value.RVTypeName}>
                       {value.RVTypeName}
                     </Option>
                   );
@@ -136,12 +137,12 @@ class BasicInformationEntry extends Component {
             }}
           >
             <Form.Item>
-              <Button type='primary' htmlType='submit'>
+              <Button type="primary" htmlType="submit">
                 提交
               </Button>
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 5 }}>
-              <Button type='primary' onClick={this.handleResetClick}>
+              <Button type="primary" onClick={this.handleResetClick}>
                 重置
               </Button>
             </Form.Item>

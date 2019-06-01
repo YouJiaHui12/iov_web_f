@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './ElectricalSystem.css';
-import ElectricalSystemData from './ElectricalSystemData';
+// import ElectricalSystemData from './ElectricalSystemData';
 import Axios from 'axios';
 export default class ElectricalSystem extends Component {
   constructor() {

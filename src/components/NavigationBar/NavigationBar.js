@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Icon } from 'antd';
+import { Layout, Menu, Icon, notification } from 'antd';
 import { Link, Switch, Route, Redirect } from 'react-router-dom';
 import BasicInformationEntry from '../../pages/BasicInformationEntry/BasicInformationEntry';
 import BasicInformationInquiry from '../../pages/BasicInformationInquiry/BasicInformationInquiry';
@@ -7,6 +7,7 @@ import ElectricalSystem from '../../pages/ElectricalSystem/ElectricalSystem';
 import RentalInformation from '../../pages/RentalInformation/RentalInformation';
 import UserSecurity from '../../pages/UserSecurity/UserSecurity';
 import VehicleStatus from '../../pages/VehicleStatus/VehicleStatus';
+import Axios from 'axios';
 
 const { Header, Content, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
@@ -15,10 +16,46 @@ export default class NavigationBar extends Component {
   state = {
     collapsed: false
   };
-
+  componentWillMount() {
+    setInterval(() => {
+      var timetimps = new Date().valueOf();
+      Axios({
+        method: 'get',
+        url: 'http://www.fomosmt.cn/car/carInfo/webF/police',
+        params: { id: 1, time: timetimps }
+      })
+        .then(res => {
+          console.log(res.data.data);
+          const data = res.data.data;
+          this.setState({
+            carname: data.carName,
+            message: data.message
+          });
+          if (JSON.stringify(res.data.data) !== '{}') {
+            this.openNotificationWithIcon(
+              'warning',
+              this.state.carname,
+              this.state.message
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }, 2000);
+  }
   onCollapse = collapsed => {
     console.log(collapsed);
     this.setState({ collapsed });
+  };
+// onClick(e){
+// this.props.history.go()
+// }
+  openNotificationWithIcon = (type, carname, message) => {
+    notification[type]({
+      message: carname,
+      description: message
+    });
   };
 
   render() {

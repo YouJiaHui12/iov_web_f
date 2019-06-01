@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './UserSecurity.css';
 import { Divider, Switch } from 'antd';
-import UserSecurityData from './UserSecurityData';
+// import UserSecurityData from './UserSecurityData';
 import Axios from 'axios';
 
 export default class UserSecurity extends Component {

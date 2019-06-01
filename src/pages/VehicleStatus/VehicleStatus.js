@@ -1,11 +1,19 @@
-import React, { Component } from "react";
-import { Divider } from "antd";
-import axios from "axios";
+import React, { Component } from 'react';
+import { Divider } from 'antd';
+import axios from 'axios';
 
 export default class VehicleStatus extends Component {
   constructor() {
     super();
     this.state = {
+      licensePlate: '',
+      speed: '',
+      currentPosition: '',
+      leftFrontTire: {},
+      rightFrontTire: {},
+      leftRearTire: {},
+      rightRearTire: {},
+      triaxialAttitude: {},
       point: {
         endPoint: [118.059395, 24.612685],
         nowPoint: [118.082033, 24.630538],
@@ -15,23 +23,41 @@ export default class VehicleStatus extends Component {
   }
   //加载前调用
   componentWillMount() {
-    this.getMapPoint(0);
+    this.getMapPoint(1);
+    axios({
+      method: 'get',
+      url: 'https://www.fomosmt.cn/car/carStatus/getCarStatusAndSafe'
+    }).then(res => {
+      const data = res.data.data;
+      this.setState({
+        licensePlate: data.licensePlate,
+        speed: data.speed,
+        currentPosition: data.currentPosition,
+        leftFrontTire: data.tirePressureMonitoring.leftFrontTire,
+        rightFrontTire: data.tirePressureMonitoring.rightFrontTire,
+        leftRearTire: data.tirePressureMonitoring.leftRearTire,
+        rightRearTire: data.tirePressureMonitoring.rightRearTire,
+        triaxialAttitude: data.triaxialAttitude
+      });
+    });
   }
   //将point注入后调用
-  componentDidUpdate() {
-    this.establishMap(this.state.point);
-  }
+  // componentDidUpdate() {
+  //   this.establishMap(this.state.point);
+  // }
   //获取地图地址
   getMapPoint(e) {
     const that = this;
+    var timetimps = new Date().valueOf();
     axios
-      .request("https://www.fomosmt.cn/car/car/getMapInfo", {
+      .request('https://www.fomosmt.cn/car/car/getMapInfo', {
         params: {
-          carId: e
+          carId: e,
+          time: timetimps
         }
       })
       .then(function(response) {
-        console.log(response.data.data);
+        console.log(response.data.data)
         let res = response.data.data;
         res.endPoint[0] = parseFloat(res.endPoint[0]);
         res.endPoint[1] = parseFloat(res.endPoint[1]);
@@ -39,16 +65,14 @@ export default class VehicleStatus extends Component {
         res.nowPoint[1] = parseFloat(res.nowPoint[1]);
         res.startingPoint[0] = parseFloat(res.startingPoint[0]);
         res.startingPoint[1] = parseFloat(res.startingPoint[1]);
-        that.setState({
-          point: res
-        });
+        that.establishMap(res)
       });
   }
   //创建地图信息
   establishMap(e) {
-    console.log("eeeee", e.startingPoint[0]);
+    console.log('eeeee', e.startingPoint[0]);
     const { BMap } = window; //创建地图
-    var map = new BMap.Map("allmap"); // 创建Map实例
+    var map = new BMap.Map('allmap'); // 创建Map实例
     var nowPoint = new BMap.Point(e.nowPoint[0], e.nowPoint[1]); //地图当前位置
     map.centerAndZoom(new BMap.Point(e.nowPoint[0], e.nowPoint[1]), 11); // 初始化地图,设置中心点坐标和地图级别
     map.addControl(new BMap.MapTypeControl()); //地图三维设置
@@ -62,106 +86,114 @@ export default class VehicleStatus extends Component {
     driving.search(startingPoint, endPoint);
     map.addOverlay(nowPoint);
     var infoWindow = new BMap.InfoWindow( //创建信息窗,失败
-      <div style={{ width: "50px", height: "50px" }}>sss</div>
+      <div style={{ width: '50px', height: '50px' }}>sss</div>
     ); // 创建信息窗口对象
     map.openInfoWindow(infoWindow, nowPoint); //信息窗,失败
-
   }
   render() {
-    let lngLat=this.state.lngLat
+    const {
+      licensePlate,
+      speed,
+      currentPosition,
+      leftFrontTire,
+      rightFrontTire,
+      leftRearTire,
+      rightRearTire,
+      triaxialAttitude
+    } = this.state;
     return (
       <div
-        className="vehicle-status-main"
-        style={{ backgroundColor: "white", marginTop: "30px" }}
+        className='vehicle-status-main'
+        style={{ backgroundColor: 'white', marginTop: '30px' }}
       >
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-around",
-            paddingTop: "20px",
-            alignItems: "flex-start"
+            display: 'flex',
+            justifyContent: 'space-around',
+            paddingTop: '20px',
+            alignItems: 'flex-start'
           }}
         >
-          <div className="vehicle-status-map" style={{ width: "500px" }}>
+          <div className='vehicle-status-map' style={{ width: '500px' }}>
             <div
-              className="mapContainer"
-              id="allmap"
-              style={{ width: "500px", height: "500px" }}
+              className='mapContainer'
+              id='allmap'
+              style={{ width: '500px', height: '500px' }}
             />
           </div>
           <div
             style={{
-              fontSize: "24px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              height: "250px"
+              fontSize: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              height: '250px'
             }}
           >
             <div>
-              车牌：<span>闽Dxxxxx</span>
+              车牌：<span>{licensePlate}</span>
             </div>
             <div>
-              车速：<span>60km/h</span>
+              车速：<span>{`${speed}km/h`}</span>
             </div>
             <div>
-              车辆当前位置：<span>厦门大云房车</span>
+              车辆当前位置：<span>{currentPosition}</span>
             </div>
           </div>
         </div>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-around"
+            display: 'flex',
+            justifyContent: 'space-around'
           }}
         >
-          <div style={{ fontSize: "24px" }}>
-            <div style={{ fontWeight: "bold" }}>胎压监测</div>
+          <div style={{ fontSize: '24px' }}>
+            <div style={{ fontWeight: 'bold' }}>胎压监测</div>
             <Divider />
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "500px"
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '500px'
               }}
             >
               <div>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center"
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
                   }}
                 >
                   <div>左前胎</div>
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100px"
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '100px'
                     }}
                   >
-                    <span>26</span>
-                    <span>2.6</span>
+                    <span>{`${leftFrontTire.Threshold}`}</span>
+                    <span>{`${leftFrontTire.currentValue}`}</span>
                   </div>
                 </div>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center"
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
                   }}
                 >
                   <div>左后胎</div>
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100px"
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '100px'
                     }}
                   >
-                    <span>26</span>
-                    <span>2.6</span>
+                    <span>{`${leftRearTire.Threshold}`}</span>
+                    <span>{`${leftRearTire.currentValue}`}</span>
                   </div>
                 </div>
               </div>
@@ -171,56 +203,56 @@ export default class VehicleStatus extends Component {
               <div>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center"
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
                   }}
                 >
                   <div>右前胎</div>
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100px"
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '100px'
                     }}
                   >
-                    <span>26</span>
-                    <span>2.6</span>
+                    <span>{`${rightFrontTire.Threshold}`}</span>
+                    <span>{`${rightFrontTire.currentValue}`}</span>
                   </div>
                 </div>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center"
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
                   }}
                 >
                   <div>右后胎</div>
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100px"
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '100px'
                     }}
                   >
-                    <span>26</span>
-                    <span>2.6</span>
+                    <span>{`${rightRearTire.Threshold}`}</span>
+                    <span>{`${rightRearTire.currentValue}`}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div style={{ fontSize: "24px" }}>
-            <div style={{ fontWeight: "bold" }}>三轴姿态</div>
+          <div style={{ fontSize: '24px' }}>
+            <div style={{ fontWeight: 'bold' }}>三轴姿态</div>
             <Divider />
             <div>
-              航向角<span>90°</span>
+              航向角<span>{`${triaxialAttitude.heading}°`}</span>
             </div>
             <div>
-              横摆角<span>90°</span>
+              横摆角<span>{`${triaxialAttitude.yawAngle}°`}</span>
             </div>
             <div>
-              质心侧偏角<span>90°</span>
+              质心侧偏角<span>{`${triaxialAttitude.centroidSideAngle}°`}</span>
             </div>
           </div>
         </div>

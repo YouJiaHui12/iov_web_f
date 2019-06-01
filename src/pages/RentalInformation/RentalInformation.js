@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './RentalInformation.css';
-import RentalInformationData from './RentalInformationData';
+// import RentalInformationData from './RentalInformationData';
 import { Table } from 'antd';
 import Axios from 'axios';
 
