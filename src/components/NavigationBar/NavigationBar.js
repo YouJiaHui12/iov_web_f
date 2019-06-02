@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Icon, notification } from 'antd';
-import { Link, Switch, Route, Redirect } from 'react-router-dom';
+import { Layout, Menu, Icon, notification, Modal, message } from 'antd';
+import { Link, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import BasicInformationEntry from '../../pages/BasicInformationEntry/BasicInformationEntry';
 import BasicInformationInquiry from '../../pages/BasicInformationInquiry/BasicInformationInquiry';
 import ElectricalSystem from '../../pages/ElectricalSystem/ElectricalSystem';
@@ -12,10 +12,16 @@ import Axios from 'axios';
 const { Header, Content, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 
-export default class NavigationBar extends Component {
-  state = {
-    collapsed: false
-  };
+class NavigationBar extends Component {
+  constructor() {
+    super();
+    this.state = {
+      collapsed: false,
+      visible: false,
+      vin: '',
+      key: ['BasicInformationInquiry']
+    };
+  }
   componentWillMount() {
     setInterval(() => {
       var timetimps = new Date().valueOf();
@@ -44,13 +50,46 @@ export default class NavigationBar extends Component {
         });
     }, 2000);
   }
+
+  showModal = key => {
+    this.setState({
+      visible: true,
+      key: key
+    });
+    console.log(this.state.key);
+  };
+  //弹窗内容变化
+  onClickSearch = e => {
+    this.setState({
+      vin: e.target.value
+    });
+  };
+  //确认对话框
+  handleOk = () => {
+    console.log(this.state.vin);
+    if (this.state.vin == 1) {
+      this.props.history.push(`/${this.state.key}/${this.state.vin}`);
+      this.setState({
+        visible: false,
+        vin: ''
+      });
+    } else {
+      message.error('请输入正确的vin!');
+    }
+  };
+  handleCancel = () => {
+    this.setState({
+      visible: false
+    });
+  };
+
   onCollapse = collapsed => {
     console.log(collapsed);
     this.setState({ collapsed });
   };
-// onClick(e){
-// this.props.history.go()
-// }
+  // onClick(e){
+  // this.props.history.go()
+  // }
   openNotificationWithIcon = (type, carname, message) => {
     notification[type]({
       message: carname,
@@ -79,9 +118,28 @@ export default class NavigationBar extends Component {
             >
               车联网监测系统
             </div>
-            <Menu theme='dark' defaultSelectedKeys={['1']} mode='inline'>
+            <Modal
+              title='请输入车辆VIN:'
+              visible={this.state.visible}
+              okText={'确定'}
+              onOk={this.handleOk}
+              cancelText={'取消'}
+              onCancel={this.handleCancel}
+            >
+              <input
+                size='large'
+                style={{ width: '315px', height: '38px' }}
+                onChange={this.onClickSearch}
+                value={this.state.vin}
+              />
+            </Modal>
+            <Menu
+              theme='dark'
+              defaultSelectedKeys={['BasicInformationInquiry']}
+              mode='inline'
+            >
               <SubMenu
-                key='sub1'
+                key='1'
                 title={
                   <span>
                     <Icon type='pie-chart' />
@@ -111,14 +169,23 @@ export default class NavigationBar extends Component {
                   </span>
                 }
               >
-                <Menu.Item key='VehicleStatus'>
-                  <Link to='/VehicleStatus'>车辆状态及行车安全信息</Link>
+                <Menu.Item
+                  key='VehicleStatus'
+                  onClick={() => this.showModal('VehicleStatus')}
+                >
+                  车辆状态及行车安全信息
                 </Menu.Item>
-                <Menu.Item key='ElectricalSystem'>
-                  <Link to='/ElectricalSystem'>电器系统及相关功能性系统</Link>
+                <Menu.Item
+                  key='ElectricalSystem'
+                  onClick={() => this.showModal('ElectricalSystem')}
+                >
+                  电器系统及相关功能性系统
                 </Menu.Item>
-                <Menu.Item key='UserSecurity'>
-                  <Link to='/UserSecurity'>用户安全及智能控制</Link>
+                <Menu.Item
+                  key='UserSecurity'
+                  onClick={() => this.showModal('UserSecurity')}
+                >
+                  用户安全及智能控制
                 </Menu.Item>
               </SubMenu>
             </Menu>
@@ -139,12 +206,12 @@ export default class NavigationBar extends Component {
                   path={'/RentalInformation'}
                   component={RentalInformation}
                 />
-                <Route path={'/VehicleStatus'} component={VehicleStatus} />
+                <Route path={'/VehicleStatus/:vin'} component={VehicleStatus} />
                 <Route
-                  path={'/ElectricalSystem'}
+                  path={'/ElectricalSystem/:vin'}
                   component={ElectricalSystem}
                 />
-                <Route path={'/UserSecurity'} component={UserSecurity} />
+                <Route path={'/UserSecurity/:vin'} component={UserSecurity} />
                 <Redirect from='/' to='/BasicInformationInquiry' />
               </Switch>
             </Content>
@@ -154,3 +221,5 @@ export default class NavigationBar extends Component {
     );
   }
 }
+
+export default withRouter(NavigationBar);

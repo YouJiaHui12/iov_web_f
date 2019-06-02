@@ -23,6 +23,7 @@ export default class VehicleStatus extends Component {
   }
   //加载前调用
   componentWillMount() {
+    console.log(this.props.match.params.vin)
     this.getMapPoint(1);
     axios({
       method: 'get',

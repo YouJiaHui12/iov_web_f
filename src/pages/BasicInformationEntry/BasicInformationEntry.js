@@ -16,7 +16,7 @@ class BasicInformationEntry extends Component {
   componentWillMount() {
     Axios({
       method: 'get',
-      url: 'http://www.fomosmt.cn/car/car/getCarType'
+      url: 'http://www.fomosmt.cn/car/carType/getAllCarType'
     }).then(res => {
       const data = res.data.data;
       console.log(data);
@@ -34,7 +34,6 @@ class BasicInformationEntry extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const { carVin, brand, licensePlate, chassisInfo, id } = values;
-        console.log(licensePlate);
         Axios({
           method: 'post',
           url: 'https://www.fomosmt.cn/car/carInfo/addCarInfo',
@@ -47,13 +46,15 @@ class BasicInformationEntry extends Component {
           })
         })
           .then(res => {
-            console.log('success');
-            push('/BasicInformationInquiry');
+            console.log(res.data);
+            if (res.data.statusCode == 200) {
+              push('/BasicInformationInquiry');
+            } else {
+              message.error(res.data.message);
+            }
           })
           .catch(err => {
-            console.log('fail');
-            // console.log(values);
-            message.error('VIN相同');
+            console.log(err);
           });
       }
     });
@@ -67,14 +68,14 @@ class BasicInformationEntry extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <div>
-        <div className="infor-entry">车辆基本信息录入</div>
+        <div className='infor-entry'>车辆基本信息录入</div>
         <Form
           onSubmit={this.handleSubmit}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 8 }}
           style={{ marginTop: '36px' }}
         >
-          <Form.Item label="VIN" hasFeedback>
+          <Form.Item label='VIN' hasFeedback>
             {getFieldDecorator('carVin', {
               rules: [
                 {
@@ -84,7 +85,7 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="品牌" hasFeedback>
+          <Form.Item label='品牌' hasFeedback>
             {getFieldDecorator('brand', {
               rules: [
                 {
@@ -94,7 +95,7 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="车牌" hasFeedback>
+          <Form.Item label='车牌' hasFeedback>
             {getFieldDecorator('licensePlate', {
               rules: [
                 {
@@ -104,7 +105,7 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="底盘信息" hasFeedback>
+          <Form.Item label='底盘信息' hasFeedback>
             {getFieldDecorator('chassisInfo', {
               rules: [
                 {
@@ -114,11 +115,11 @@ class BasicInformationEntry extends Component {
               ]
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="房车类型" hasFeedback>
+          <Form.Item label='房车类型' hasFeedback>
             {getFieldDecorator('id', {
               rules: [{ required: true, message: '请选择房车类型' }]
             })(
-              <Select placeholder="请选择房车类型">
+              <Select placeholder='请选择房车类型'>
                 {RVType.map((value, index) => {
                   return (
                     <Option key={index} value={value.RVTypeName}>
@@ -137,12 +138,12 @@ class BasicInformationEntry extends Component {
             }}
           >
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type='primary' htmlType='submit'>
                 提交
               </Button>
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 5 }}>
-              <Button type="primary" onClick={this.handleResetClick}>
+              <Button type='primary' onClick={this.handleResetClick}>
                 重置
               </Button>
             </Form.Item>
