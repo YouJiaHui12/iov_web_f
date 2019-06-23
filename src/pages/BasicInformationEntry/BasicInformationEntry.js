@@ -42,13 +42,14 @@ class BasicInformationEntry extends Component {
             brand: brand,
             licentsePlate: licensePlate,
             chassisInfo: chassisInfo,
-            'car.carType': id
+            'car.carType': id,
+            'userF.id': sessionStorage.getItem('id')
           })
         })
           .then(res => {
             console.log(res.data);
-            if (res.data.statusCode == 200) {
-              push('/BasicInformationInquiry');
+            if (res.data.statusCode === 200) {
+              push('/iovindex/BasicInformationInquiry');
             } else {
               message.error(res.data.message);
             }
@@ -81,6 +82,15 @@ class BasicInformationEntry extends Component {
                 {
                   required: true,
                   message: '请输入VIN'
+                },
+
+                {
+                  pattern: /^[0-9]\d{16,}$/,
+                  message: '只能输入17位'
+                },
+                {
+                  max: 17,
+                  message: '超过了'
                 }
               ]
             })(<Input />)}

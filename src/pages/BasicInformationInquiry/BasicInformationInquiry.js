@@ -1,24 +1,15 @@
 import React, { Component } from 'react';
 import './BasicInformationInquiry.css';
-import {
-  Input,
-  // Select,
-  Button,
-  Table,
-  Divider,
-  Form,
-  Popconfirm,
-  message
-} from 'antd';
+import { Input, Button, Table, Form, Popconfirm, message } from 'antd';
 import Axios from 'axios';
 import Qs from 'qs';
-// const Option = Select.Option;
 
 class BasicInformationInquiry extends Component {
   constructor() {
     super();
     this.state = {
-      carmessageslist: []
+      carmessageslist: [],
+      current: 0
     };
   }
   componentWillMount() {
@@ -40,42 +31,35 @@ class BasicInformationInquiry extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values.VIN);
+        console.log('Received values of form: ', values.message);
+        if (
+          values.message === '空' ||
+          values.message === '闲' ||
+          values.message === '空闲'
+        ) {
+          values.message = 'true';
+        }
+        var timestamp = new Date().valueOf();
         Axios({
           method: 'get',
-          url: 'https://www.fomosmt.cn/car/carInfo/getCarInfoByVin',
-          params: { vin: values.VIN }
+          url: 'https://www.fomosmt.cn/car/carInfo/getCarInfoByCondition',
+          params: {
+            time: timestamp,
+            message: values.message,
+            id: sessionStorage.getItem('id')
+          }
         })
           .then(res => {
             console.log(res.data.data);
-            const {
-              carPlate,
-              vin,
-              carType,
-              carChassis,
-              carStatus,
-              carID
-            } = res.data.data;
-            const searchdata = {
-              key: carID,
-              carID: carID,
-              VIN: vin,
-              licensePlate: carPlate,
-              vehicleType: carType,
-              chassiscInformation: carChassis,
-              leaseStatus: carStatus
-            };
-            const newlist = [];
-            newlist.push(searchdata);
             this.setState({
-              carmessageslist: newlist
+              carmessageslist: res.data.data.carInfos
             });
           })
           .catch(err => {
             console.log(err);
           });
       } else {
-        var timestamp = new Date().valueOf();
+        // var timestamp = new Date().valueOf();
         Axios({
           method: 'get',
           url: 'https://www.fomosmt.cn/car/carInfo/listCarInfo',
@@ -91,8 +75,8 @@ class BasicInformationInquiry extends Component {
     });
   };
   handleDelete = key => {
+    console.log(key, 'ssssssssssss');
     const dataSource = [...this.state.carmessageslist];
-
     Axios({
       method: 'post',
       url: 'https://www.fomosmt.cn/car/carInfo/deleteCarInfo',
@@ -110,6 +94,13 @@ class BasicInformationInquiry extends Component {
     console.log(key);
   };
 
+  changePage(e) {
+    console.log((e - 1) * 6);
+    this.setState({
+      current: (e - 1) * 6
+    });
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const {
@@ -117,9 +108,9 @@ class BasicInformationInquiry extends Component {
     } = this.props;
     const columns = [
       {
-        title: '车辆ID',
-        dataIndex: 'key',
-        key: 'key'
+        title: '序号',
+        render: (text, record, index) => `${index + 1 + this.state.current}`,
+        key: 'Index'
       },
       {
         title: 'VIN',
@@ -151,14 +142,26 @@ class BasicInformationInquiry extends Component {
         key: '操作',
         render: (text, record) => (
           <span>
-            <a href='javascript:;'>查看</a>
-
-            <Divider type='vertical' />
+            <Button
+              size='small'
+              style={{ backgroundColor: '#108ee9', color: 'white' }}
+              onClick={() => push(`detail/Monitor${record.VIN}`)}
+            >
+              查看更多
+            </Button>
             <Popconfirm
-              title='Sure to delete?'
+              title='确定删除吗?'
+              okText='确定'
+              cancelText='取消'
               onConfirm={() => this.handleDelete(record.key)}
             >
-              <a href='javascript:;'>删除</a>
+              <Button
+                size='small'
+                style={{ backgroundColor: '#f50', color: 'white' }}
+                href=''
+              >
+                删除
+              </Button>
             </Popconfirm>
           </span>
         )
@@ -176,10 +179,15 @@ class BasicInformationInquiry extends Component {
         >
           <div className='basic-infor-inpuiry-main-top'>
             <Form layout='inline' onSubmit={this.handleSubmit}>
-              <Form.Item label='VIN'>
-                {getFieldDecorator('VIN', {
-                  rules: [{ required: true, message: '请输入VIN！' }]
-                })(<Input placeholder='请输入' style={{ width: '200px' }} />)}
+              <Form.Item>
+                {getFieldDecorator('message', {
+                  rules: [{ required: true, message: '请输入搜索条件！' }]
+                })(
+                  <Input
+                    placeholder='请输入搜索内容'
+                    style={{ width: '230px' }}
+                  />
+                )}
               </Form.Item>
 
               <Form.Item>
@@ -191,14 +199,25 @@ class BasicInformationInquiry extends Component {
             <Button
               type='primary'
               onClick={() => {
-                push('/BasicInformationEntry');
+                push('/iovindex/BasicInformationEntry');
               }}
             >
               添加车辆
             </Button>
           </div>
           <div className='basic-infor-inpuiry-main-middle'>
-            <Table columns={columns} dataSource={carmessageslist} />
+            <Table
+              columns={columns}
+              dataSource={carmessageslist}
+              rowKey={(record, index) => `${index + 1 + this.state.current}`}
+              pagination={{
+                pageSize: 6,
+                onChange: current => this.changePage(current),
+                showTotal: (current, pageSize) =>
+                  `从第${pageSize[0]}到${pageSize[1]}条，共${current}条数据。`
+              }}
+              bordered
+            />
           </div>
         </div>
       </div>

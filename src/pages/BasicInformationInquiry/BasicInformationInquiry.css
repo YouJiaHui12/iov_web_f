@@ -4,3 +4,11 @@
   padding: 30px 40px 0px 40px;
   min-height: 100px;
 }
+.ant-table-pagination.ant-pagination {
+  float: right;
+  margin: 16px 16px;
+}
+.ant-pagination-total-text {
+  font-size: 16px;
+  letter-spacing: 4px;
+}

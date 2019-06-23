@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Divider } from 'antd';
+import './VehicleStatus.css';
 import axios from 'axios';
 
 export default class VehicleStatus extends Component {
@@ -23,11 +23,12 @@ export default class VehicleStatus extends Component {
   }
   //加载前调用
   componentWillMount() {
-    console.log(this.props.match.params.vin)
+    // console.log(this.props.match.params.vin)
     this.getMapPoint(1);
     axios({
       method: 'get',
-      url: 'https://www.fomosmt.cn/car/carStatus/getCarStatusAndSafe'
+      url: 'https://www.fomosmt.cn/car/carStatus/getCarStatusAndSafe',
+      data: { vin: this.props.vin }
     }).then(res => {
       const data = res.data.data;
       this.setState({
@@ -58,7 +59,7 @@ export default class VehicleStatus extends Component {
         }
       })
       .then(function(response) {
-        console.log(response.data.data)
+        console.log(response.data.data);
         let res = response.data.data;
         res.endPoint[0] = parseFloat(res.endPoint[0]);
         res.endPoint[1] = parseFloat(res.endPoint[1]);
@@ -66,7 +67,7 @@ export default class VehicleStatus extends Component {
         res.nowPoint[1] = parseFloat(res.nowPoint[1]);
         res.startingPoint[0] = parseFloat(res.startingPoint[0]);
         res.startingPoint[1] = parseFloat(res.startingPoint[1]);
-        that.establishMap(res)
+        that.establishMap(res);
       });
   }
   //创建地图信息
@@ -103,16 +104,13 @@ export default class VehicleStatus extends Component {
       triaxialAttitude
     } = this.state;
     return (
-      <div
-        className='vehicle-status-main'
-        style={{ backgroundColor: 'white', marginTop: '30px' }}
-      >
+      <div className='vehicle-status-main'>
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-around',
             paddingTop: '20px',
-            alignItems: 'flex-start'
+            alignItems: 'flex-start',
+            paddingLeft: '30px'
           }}
         >
           <div className='vehicle-status-map' style={{ width: '500px' }}>
@@ -122,138 +120,73 @@ export default class VehicleStatus extends Component {
               style={{ width: '500px', height: '500px' }}
             />
           </div>
-          <div
-            style={{
-              fontSize: '24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              height: '250px'
-            }}
-          >
-            <div>
-              车牌：<span>{licensePlate}</span>
-            </div>
-            <div>
-              车速：<span>{`${speed}km/h`}</span>
-            </div>
-            <div>
-              车辆当前位置：<span>{currentPosition}</span>
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-around'
-          }}
-        >
-          <div style={{ fontSize: '24px' }}>
-            <div style={{ fontWeight: 'bold' }}>胎压监测</div>
-            <Divider />
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '500px'
-              }}
-            >
+
+          <div className='vehicle-status-right'>
+            <div className='vehicle-status-right-top'>
               <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>左前胎</div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100px'
-                    }}
-                  >
-                    <span>{`${leftFrontTire.Threshold}`}</span>
-                    <span>{`${leftFrontTire.currentValue}`}</span>
+                车牌：<span>{licensePlate}</span>
+              </div>
+              <div>
+                车速：<span>{`${speed}km/h`}</span>
+              </div>
+              <div>
+                车辆当前位置：<span>{currentPosition}</span>
+              </div>
+            </div>
+            <div className='vehicle-status-right-bottom'>
+              <div style={{ fontSize: '24px' }}>
+                <div style={{ fontWeight: 'bold' }}>胎压监测</div>
+                <div className='tire-pressure-monitoring'>
+                  <div>
+                    <div className='tire-pressure-main'>
+                      <div>左前胎</div>
+                      <div className='tire-pressure-data'>
+                        <span>{`${leftFrontTire.Threshold}`}</span>
+                        <span>{`${leftFrontTire.currentValue}`}</span>
+                      </div>
+                    </div>
+                    <div className='tire-pressure-main'>
+                      <div>左后胎</div>
+                      <div className='tire-pressure-data'>
+                        <span>{`${leftRearTire.Threshold}`}</span>
+                        <span>{`${leftRearTire.currentValue}`}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>左后胎</div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100px'
-                    }}
-                  >
-                    <span>{`${leftRearTire.Threshold}`}</span>
-                    <span>{`${leftRearTire.currentValue}`}</span>
+                  <div>
+                    <div>图</div>
+                  </div>
+                  <div>
+                    <div className='tire-pressure-main'>
+                      <div>右前胎</div>
+                      <div className='tire-pressure-data'>
+                        <span>{`${rightFrontTire.Threshold}`}</span>
+                        <span>{`${rightFrontTire.currentValue}`}</span>
+                      </div>
+                    </div>
+                    <div className='tire-pressure-main'>
+                      <div>右后胎</div>
+                      <div className='tire-pressure-data'>
+                        <span>{`${rightRearTire.Threshold}`}</span>
+                        <span>{`${rightRearTire.currentValue}`}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div>
-                <div>图</div>
-              </div>
-              <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>右前胎</div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100px'
-                    }}
-                  >
-                    <span>{`${rightFrontTire.Threshold}`}</span>
-                    <span>{`${rightFrontTire.currentValue}`}</span>
-                  </div>
+              <div className='triaxial-attitude'>
+                <div style={{ fontWeight: 'bold' }}>三轴姿态</div>
+                <div>
+                  航向角<span>{`${triaxialAttitude.heading}°`}</span>
                 </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>右后胎</div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100px'
-                    }}
-                  >
-                    <span>{`${rightRearTire.Threshold}`}</span>
-                    <span>{`${rightRearTire.currentValue}`}</span>
-                  </div>
+                <div>
+                  横摆角<span>{`${triaxialAttitude.yawAngle}°`}</span>
+                </div>
+                <div>
+                  质心侧偏角
+                  <span>{`${triaxialAttitude.centroidSideAngle}°`}</span>
                 </div>
               </div>
-            </div>
-          </div>
-          <div style={{ fontSize: '24px' }}>
-            <div style={{ fontWeight: 'bold' }}>三轴姿态</div>
-            <Divider />
-            <div>
-              航向角<span>{`${triaxialAttitude.heading}°`}</span>
-            </div>
-            <div>
-              横摆角<span>{`${triaxialAttitude.yawAngle}°`}</span>
-            </div>
-            <div>
-              质心侧偏角<span>{`${triaxialAttitude.centroidSideAngle}°`}</span>
             </div>
           </div>
         </div>

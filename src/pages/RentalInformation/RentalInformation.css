@@ -1,9 +1,9 @@
-.rental-infor-main {
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
+.rental-infor-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 40px 0px 40px;
+  min-height: 100px;
 }
 .rental-infor-form {
   text-align: center;
-  margin-top: 36px;
 }

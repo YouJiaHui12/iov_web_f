@@ -9,13 +9,14 @@ export default class UserSecurity extends Component {
     super();
     this.state = {
       intelligentControl: [],
-      environmentalSystem:{}
+      environmentalSystem: {}
     };
   }
   componentWillMount() {
     Axios({
       method: 'get',
-      url: 'http://www.fomosmt.cn/car/operating/getUserSafeOrOperating'
+      url: 'http://www.fomosmt.cn/car/operating/getUserSafeOrOperating',
+      data: { vin: this.props.vin }
     }).then(res => {
       const data = res.data.data;
       this.setState({
@@ -25,12 +26,12 @@ export default class UserSecurity extends Component {
     });
   }
   render() {
-    const { intelligentControl,environmentalSystem } = this.state;
+    const { intelligentControl, environmentalSystem } = this.state;
     return (
       <div className='user-security'>
         <div className='user-security-main'>
           <div className='license-plate'>闽Dxxxxx</div>
-          <div style={{ margin: '70px auto', fontSize: '18px' }}>
+          <div style={{ margin: '50px auto', fontSize: '22px' }}>
             <div>智能操控</div>
             <Divider />
             {intelligentControl.map((value, index) => {
@@ -48,7 +49,7 @@ export default class UserSecurity extends Component {
               );
             })}
           </div>
-          <div style={{ fontSize: '18px' }}>
+          <div style={{ fontSize: '22px' }}>
             <div>环境系统</div>
             <Divider />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
